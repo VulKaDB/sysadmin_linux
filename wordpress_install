@@ -1,3 +1,4 @@
+
 #!/bin/bash
 
 echo "Installation PHP"
@@ -29,6 +30,9 @@ cat > /etc/apache2/sites-available/wordpress.conf <<EOF
 	ServerName wordpress.dylan.lan
 
 	DocumentRoot /var/www/wordpress
+	<Directory /var/www/wordpress>
+		AllowOverride All
+	</Directory>
 </VirtualHost>
 EOF
 echo
