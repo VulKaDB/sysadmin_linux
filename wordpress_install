@@ -1,48 +1,86 @@
-
 #!/bin/bash
-
-echo "Installation PHP"
-apt install php -y
+#
+echo "Mise à Jour du Système"
+apt update && apt upgrade -y -q
 echo
-echo "Installation de Wordpress"
+echo "Installation wget, unzip & debconf-utils"
+apt install wget unzip debconf-utils -y -q
 echo
-echo "Déplacement dans le dossier Wordpress"
-cd /var/www/
+echo "Installation LAMP"
+apt install apache2 mariadb-server -y -q
+apt install php php-mysql php-curl php-gd php-mbstring php-xml php-xmlrpc php-soap php-intl php-zip -y -q
 echo
-echo "Téléchargement de Wordpress"
-wget https://fr.wordpress.org/latest-fr_FR.zip
+echo "PréConfiguration de phpMyAdmin"
+echo "phpmyadmin phpmyadmin/reconfigure-webserver multiselect apache2" | debconf-set-selections
+echo "phpmyadmin phpmyadmin/dbconfig-install boolean true" | debconf-set-selections
 echo
-echo "Unzip Wordpress"
+echo "Installation phpMyAdmin"
+apt install phpmyadmin -y -q
+echo
+echo "Installation openssl"
+apt install openssl -y -q
+echo
+echo "Déplacement dans /etc/apache2"
+cd /etc/apache2
+echo
+echo "Générer le certificat SSL"
+openssl req -x509 -nodes -days 365 -new -keyout apache.key -out apache.pem <<EOF
+FR
+France
+Loir-Et-Cher
+Skolae
+/
+localhost
+admin@localhost
+EOF
+echo
+echo "Déplacement dans /var/www"
+cd /var/www
+echo
+echo "Installation Wordpress Latest"
+wget -q https://fr.wordpress.org/latest-fr_FR.zip
 unzip -q -o latest-fr_FR.zip
+rm latest-fr_FR.zip
 echo
-echo "Donner les permissions a www-data"
-chown -R www-data:www-data /var/www/wordpress
+echo "Enable Rewrite & SSL"
+a2enmod rewrite
+a2enmod ssl
 echo
-echo "Suppression du ficher d'installation"
-rm -f latest-fr_FR.zip
-echo
-echo "Installer apache2"
-apt install apache2 -y
-echo
-echo "Créer un VirtualHost"
+echo "Créer un VirtualHost:80"
 cat > /etc/apache2/sites-available/wordpress.conf <<EOF
 <VirtualHost *:80>
-	ServerName wordpress.dylan.lan
-
+	ServerName localhost
 	DocumentRoot /var/www/wordpress
 	<Directory /var/www/wordpress>
 		AllowOverride All
+		Require all granted
 	</Directory>
+
+        RewriteEngine On
+        RewriteCond %{HTTPS} off
+        RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI}
 </VirtualHost>
 EOF
 echo
-echo "Activation de Wordpress.conf"
-a2ensite wordpress.conf 2>/dev/nnull
+echo "Créer un VirtualHost:443"
+cat > /etc/apache2/sites-available/wordpress-ssl.conf <<EOF
+<VirtualHost *:443>
+        ServerName localhost
+        DocumentRoot /var/www/wordpress
+        <Directory /var/www/wordpress>
+                AllowOverride All
+		Require all granted
+        </Directory>
+
+	SSLEngine On
+        SSLCertificateFile      /etc/apache2/apache.pem
+        SSLCertificateKeyFile   /etc/apache2/apache.key
+</VirtualHost>
+EOF
 echo
-echo "Recharger apache2"
-systemctl reload apache2
-echo "Installer MariaDB"
-apt install mariadb-server -y
+echo "Activation des .conf"
+a2ensite wordpress.conf 2>/dev/null
+a2ensite wordpress-ssl.conf 2>/dev/null
 echo
 echo "Création de la DB Wordpress"
 mariadb <<EOF
@@ -51,10 +89,27 @@ CREATE USER IF NOT EXISTS  wordpress@localhost IDENTIFIED BY "secret";
 GRANT ALL PRIVILEGES ON wordpress.* TO wordpress@localhost;
 FLUSH PRIVILEGES;
 EOF
-echo "DB Wordpress OK"
+echo
+echo "Déplacement dans /var/www/wordpress"
+cd /var/www/wordpress
+echo
+echo "Copie du fichier wp-config-sample.php"
+cp wp-config-sample.php wp-config.php
+echo
+echo "Configuration du fichier wp-config.php"
+sed -i 's/database_name_here/wordpress/g' wp-config.php
+sed -i 's/username_here/wordpress/g' wp-config.php
+sed -i 's/password_here/secret/g' wp-config.php
+echo
+echo "Donner les permissions à www-data"
+chown -R www-data:www-data /var/www/wordpress
+chmod -R 755 /var/www/wordpress
+echo
+echo "Recharger apache2 au cas ou :p"
+systemctl restart apache2
 echo
 echo "--------------------------------------------------------------------"
 echo " Installation effectué avec succès !"
 echo "--------------------------------------------------------------------"
-echo
-echo " Wordpress est accessible via http://wordpress.dylan.lan "
+echo " L'URL pour accéder à Wordpress est "
+echo " https://$(hostname -i) ou https://$(localhost)"
