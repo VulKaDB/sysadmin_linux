@@ -65,6 +65,10 @@ echo "Configuration de resolvconf"
 cat > /etc/resolvconf/resolv.conf.d/head <<EOF
 nameserver 127.0.0.1
 EOF
+echo "Configuration du fichier Hosts en Failover"
+sed -i '/wordpress.admin.lan/d' /etc/hosts
+echo "127.0.0.1 wordpress.admin.lan mail.wordpress.admin.lan" >> /etc/hosts
+echo
 echo "Installation LAMP"
 apt install apache2 php mariadb-server -y -q 2>/dev/null
 echo
