@@ -195,3 +195,7 @@ echo "phpMyAdmin : https://wordpress.admin.lan/phpmyadmin wordpress / secret"
 echo "Wordpress : https://wordpress.admin.lan"
 echo "Roundcube : https://wordpress.admin.lan/roundcube"
 echo "Identifiants Mail : $(logname) / ton_mot_de_passe-de-ta-machine"
+echo "Mail test"
+mail $(logname)@wordpress.admin.lan <<EOF
+L'installation de Wordpress est terminée pour finaliser le processus rendez-vous sur https://wordpress.admin.lan
+EOF
