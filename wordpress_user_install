@@ -189,7 +189,7 @@ echo
 echo "Installation Roundcube"
 apt install roundcube roundcube-mysql -y -q 2>/dev/null
 echo "Configuration de roundcube.conf"
-sed -i 's|# Alias /roundcube|Alias /roundcube|g' /etc/apache2/conf-available/roundcube.conf
+sed -i 's|# *Alias /roundcube|Alias /roundcube|g' /etc/apache2/conf-available/roundcube.conf
 echo
 echo "Activation du .conf"
 a2enconf roundcube 2>/dev/null
