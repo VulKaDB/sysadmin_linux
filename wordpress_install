@@ -6,13 +6,13 @@ echo "Mise à Jour du Système"
 apt update && apt upgrade -y
 echo
 echo "Installation unzip, zip, bind9, resolvconf & debconf-utils"
-apt install unzip zip bind9 resolvconf debconf-utils -y
+apt install unzip zip bind9 resolvconf bsd-mailx debconf-utils -y
 echo
 echo "Configuration de named.conf.local"
 cat > /etc/bind/named.conf.local <<EOF
 zone "wordpress.admin.lan" {
 	type master;
-	file "var/lib/bind9/db.wordpress.admin.lan";
+	file "/var/lib/bind9/db.wordpress.admin.lan";
 };
 EOF
 echo
