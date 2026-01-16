@@ -177,7 +177,7 @@ echo "Configuration de roundcube.conf"
 sed -i 's|# Alias /roundcube|Alias /roundcube|g' /etc/apache2/conf-available/roundcube.conf
 echo
 echo "Activation du .conf"
-a2enconf roundcube > /dev/null
+a2enconf roundcube
 echo
 echo "Recharger apache2"
 systemctl restart apache2
