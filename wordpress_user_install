@@ -14,7 +14,7 @@ echo "Mise à Jour du Système"
 apt update && apt upgrade -y -q 2>/dev/null
 echo
 echo "Installation unzip, zip, bind9, resolvconf & debconf-utils"
-apt install unzip zip bind9 resolvconf debconf-utils -y -q 2>/dev/null
+apt install unzip zip bind9 resolvconf bsd-mailx debconf-utils -y -q 2>/dev/null
 echo
 echo "Configuration de named.conf.local"
 cat > /etc/bind/named.conf.local <<EOF
