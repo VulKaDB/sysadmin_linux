@@ -37,7 +37,8 @@ echo
 echo "Relancer bind9"
 systemctl restart bind9
 echo
-echo "Configuration de resolvconf"
+echo "Création et Configuration de resolvconf"
+mkdir -p /etc/resolvconf/resolv.conf.d/
 cat > /etc/resolvconf/resolv.conf.d/head <<EOF
 nameserver 127.0.0.1
 EOF
