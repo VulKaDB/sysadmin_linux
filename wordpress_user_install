@@ -18,9 +18,9 @@ apt install unzip zip bind9 resolvconf debconf-utils -y -q 2>/dev/null
 echo
 echo "Configuration de named.conf.local"
 cat > /etc/bind/named.conf.local <<EOF
-zone "wordpress.admin.lan" {
+zone "$user.admin.lan" {
 	type master;
-	file "var/lib/bind9/db.$user.admin.lan";
+	file "/var/lib/bind9/db.$user.admin.lan";
 };
 EOF
 echo
@@ -50,8 +50,8 @@ cat > /etc/resolvconf/resolv.conf.d/head <<EOF
 nameserver 127.0.0.1
 EOF
 echo "Configuration du fichier Hosts en Failover"
-sed -i '/wordpress.admin.lan/d' /etc/hosts
-echo "127.0.0.1 wordpress.admin.lan mail.wordpress.admin.lan" >> /etc/hosts
+sed -i '/$user.admin.lan/d' /etc/hosts
+echo "127.0.0.1 $user.admin.lan mail.$user.admin.lan" >> /etc/hosts
 echo
 echo "Installation LAMP"
 apt install apache2 php mariadb-server -y -q 2>/dev/null
@@ -148,9 +148,9 @@ echo "Copie du fichier wp-config-sample.php"
 cp wp-config-sample.php wp-config.php
 echo
 echo "Configuration du fichier wp-config.php"
-sed -i 's/database_name_here/wordpress/g' wp-config.php
-sed -i 's/username_here/wordpress/g' wp-config.php
-sed -i 's/password_here/secret/g' wp-config.php
+sed -i 's/database_name_here/ûser/g' wp-config.php
+sed -i 's/username_here/$user/g' wp-config.php
+sed -i 's/password_here/$pass/g' wp-config.php
 echo
 echo "Donner les permissions à www-data"
 chown -R www-data:www-data /var/www/$user
@@ -207,7 +207,7 @@ echo "Installation effectué avec succès !"
 echo "--------------------------------------------------------------------"
 echo "Wordpress : https://$user.admin.lan"
 echo "Roundcube : https://$user.admin.lan/roundcube"
-echo "Identifiants Mail : $(logname) / ton_mot_de_passe-de-ta-machine"
+echo "Identifiants Mail : $user / $pass"
 mail $logname@$user.admin.lan <<EOF
 L'installation de Wordpress est terminée pour finaliser le processus rendez-vous sur https://$user.admin.lan
 L'installation de Roundcue est terminée pour y accéder rendez-vous sur https://$user.admin.lan/roundcube
