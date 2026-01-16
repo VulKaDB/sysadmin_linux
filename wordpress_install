@@ -2,13 +2,11 @@
 #
 IP_MACHINE=$(hostname -I | awk '{print $1}')
 #
-sed -e
-#
 echo "Mise à Jour du Système"
-apt update && apt upgrade -y -q > /dev/null
+apt update && apt upgrade -y
 echo
 echo "Installation unzip, zip, bind9, resolvconf & debconf-utils"
-apt install unzip zip bind9 resolvconf debconf-utils -y -q > /dev/null
+apt install unzip zip bind9 resolvconf debconf-utils -y
 echo
 echo "Configuration de named.conf.local"
 cat > /etc/bind/named.conf.local <<EOF
@@ -44,7 +42,7 @@ cat > /etc/resolvconf/resolv.conf.d/head <<EOF
 nameserver 127.0.0.1
 EOF
 echo "Installation LAMP"
-apt install apache2 php mariadb-server -y -q > /dev/null
+apt install apache2 php mariadb-server -y
 echo
 echo "PréConfiguration de phpMyAdmin"
 echo "phpmyadmin phpmyadmin/reconfigure-webserver multiselect apache2" | debconf-set-selections
@@ -53,10 +51,10 @@ echo "phpmyadmin phpmyadmin/mysql/app-pass password" | debconf-set-selections
 echo "phpmyadmin phpmyadmin/app-password-confirm password" | debconf-set-selections
 echo
 echo "Installation phpMyAdmin"
-apt install phpmyadmin -y -q > /dev/null
+apt install phpmyadmin -y
 echo
 echo "Installation openssl"
-apt install openssl -y -q /dev/null
+apt install openssl -y
 echo
 echo "Déplacement dans /etc/apache2"
 cd /etc/apache2
@@ -117,8 +115,8 @@ cat > /etc/apache2/sites-available/wordpress-ssl.conf <<EOF
 EOF
 echo
 echo "Activation des .conf"
-a2ensite wordpress.conf > /dev/null
-a2ensite wordpress-ssl.conf > /dev/null
+a2ensite wordpress.conf
+a2ensite wordpress-ssl.conf
 echo
 echo "Création de la DB Wordpress"
 mariadb <<EOF
@@ -154,7 +152,7 @@ echo "exim4-config exim4/dc_other_hostnames string wordpress.admin.lan" | debcon
 echo "exim4-config exim4/dc_relay_nets string 127.0.0.0/8;$IP_MACHINE/24" | debconf-set-selections
 echo
 echo "Installation Exim4"
-apt install exim4 -y -q > /dev/null
+apt install exim4 -y
 echo
 echo "Configuration de exim4.conf.localmacros"
 cat > /etc/exim4/exim4.conf.localmacros <<EOF
@@ -165,7 +163,7 @@ echo " Recharger Exim4"
 systemctl restart exim4
 echo
 echo "Installation Dovecot"
-apt install dovecot-imapd -y -q > /dev/null
+apt install dovecot-imapd -y
 echo
 echo "PréConfiguration Roundcube"
 echo "roundcube-core roundcube/dbconfig-install boolean true" | debconf-set-selections
@@ -174,7 +172,7 @@ echo "roundcube-core roundcube/mysql/app-pass password" | debconf-set-selections
 echo "roundcube-core roundcube/app-password-confirm password" | debconf-set-selections
 echo
 echo "Installation Roundcube"
-apt install roundcube roundcube-mysql -y -q > /dev/null
+apt install roundcube roundcube-mysql -y
 echo "Configuration de roundcube.conf"
 sed -i 's|# Alias /roundcube|Alias /roundcube|g' /etc/apache2/conf-available/roundcube.conf
 echo
