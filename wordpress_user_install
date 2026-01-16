@@ -6,22 +6,6 @@ GATEWAY=$(ip route | grep "default" | awk '{print $3}')
 user="bob"
 pass="secret123"
 #
-sed -e
-#
-echo "Configuration du Réseau"
-cat > /etc/network/interfaces <<EOF
-source /etc/network/interfaces.d/*
-
-auto lo
-iface lo inet loopback
-
-allow-hotplug $INTERFACE
-iface $INTERFACE inet static
-	address $IP_MACHINE
-	gateway $GATEWAY
-	netmash 255.255.255.0
-	nameservems 127.0.0.1 1.1.1.1
-EOF
 echo "Création du l'utilisateur $user"
 useradd $user -m -s /bin/bash
 echo $user:$pass | chpasswd 2>/dev/null
@@ -223,7 +207,7 @@ echo "Installation effectué avec succès !"
 echo "--------------------------------------------------------------------"
 echo "Wordpress : https://$user.admin.lan"
 echo "Roundcube : https://$user.admin.lan/roundcube"
-echo "Identifiants Mail : $logname / ton_mot_de_passe-de-ta-machine"
+echo "Identifiants Mail : $(logname) / ton_mot_de_passe-de-ta-machine"
 mail $logname@$user.admin.lan <<EOF
 L'installation de Wordpress est terminée pour finaliser le processus rendez-vous sur https://$user.admin.lan
 L'installation de Roundcue est terminée pour y accéder rendez-vous sur https://$user.admin.lan/roundcube
