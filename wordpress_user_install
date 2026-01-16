@@ -219,4 +219,8 @@ echo "Installation effectué avec succès !"
 echo "--------------------------------------------------------------------"
 echo "Wordpress : https://$user.admin.lan"
 echo "Roundcube : https://$user.admin.lan/roundcube"
-echo "Identifiants Mail : $(logname) / ton_mot_de_passe-de-ta-machine"
+echo "Identifiants Mail : $logname / ton_mot_de_passe-de-ta-machine"
+mail $logname@$user.admin.lan <<EOF
+L'installation de Wordpress est terminée pour finaliser le processus rendez-vous sur https://$user.admin.lan
+L'installation de Roundcue est terminée pour y accéder rendez-vous sur https://$user.admin.lan/roundcube
+EOF
