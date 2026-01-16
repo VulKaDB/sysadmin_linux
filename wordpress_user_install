@@ -148,9 +148,9 @@ echo "Copie du fichier wp-config-sample.php"
 cp wp-config-sample.php wp-config.php
 echo
 echo "Configuration du fichier wp-config.php"
-sed -i 's/database_name_here/ûser/g' wp-config.php
-sed -i 's/username_here/$user/g' wp-config.php
-sed -i 's/password_here/$pass/g' wp-config.php
+sed -i "s/database_name_here/$user/g" wp-config.php
+sed -i "s/username_here/$user/g" wp-config.php
+sed -i "s/password_here/$pass/g" wp-config.php
 echo
 echo "Donner les permissions à www-data"
 chown -R www-data:www-data /var/www/$user
